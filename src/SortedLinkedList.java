@@ -19,7 +19,6 @@ public class SortedLinkedList {
 
     public void insertItem(ItemType item) {
         if (containsItem(item)) {
-            System.out.println("Sorry. You cannot insert the duplicate item");
             return;
         }
 
@@ -40,7 +39,7 @@ public class SortedLinkedList {
 
     public void deleteItem(ItemType item) {
         if (head == null) {
-            System.out.println("Sorry. The list is empty");
+            System.out.println("The list is empty");
             return;
         }
 
@@ -52,7 +51,7 @@ public class SortedLinkedList {
                 current = current.next;
             }
             if (current.next == null) {
-                System.out.println("Sorry. The item to be deleted is not in the list");
+                System.out.println("The item is not present in the list");
             } else {
                 current.next = current.next.next;
             }
@@ -64,7 +63,7 @@ public class SortedLinkedList {
         int index = 0;
         while (current != null) {
             if (item.compareTo(current.info) == 0) {
-                return index;
+                return index +1;
             }
             current = current.next;
             index++;
@@ -73,36 +72,33 @@ public class SortedLinkedList {
     }
 
     public void mergeList(SortedLinkedList list2) {
+        NodeType current1 = head;
+        NodeType current2 = list2.head;
         SortedLinkedList mergedList = new SortedLinkedList();
 
-        NodeType current1 = this.head;
-        NodeType current2 = list2.head;
-
-        while (current1 != null || current2 != null) {
-            if (current1 == null) {
-                mergedList.insertItem(current2.info);
-                current2 = current2.next;
-            } else if (current2 == null) {
-                mergedList.insertItem(current1.info);
-                current1 = current1.next;
-            } else {
-                int compareResult = current1.info.compareTo(current2.info);
-                if (compareResult < 0) {
+        while (current1 != null && current2 != null) {
+            while (current1 != null && current2 != null) {
+                if (current1.info.compareTo(current2.info) <= 0) {
                     mergedList.insertItem(current1.info);
                     current1 = current1.next;
-                } else if (compareResult > 0) {
-                    mergedList.insertItem(current2.info);
-                    current2 = current2.next;
                 } else {
-                    // Duplicate, only add once
-                    mergedList.insertItem(current1.info);
-                    current1 = current1.next;
+                    mergedList.insertItem(current2.info);
                     current2 = current2.next;
                 }
             }
+        
+            while (current1 != null) {
+                mergedList.insertItem(current1.info);
+                current1 = current1.next;
+            }
+        
+            while (current2 != null) {
+                mergedList.insertItem(current2.info);
+                current2 = current2.next;
+            }
+        
+            this.head = mergedList.head;
         }
-
-        System.out.print("Merged list: " + mergedList);
     }
 
     public void deleteAlternateNodes() {
@@ -112,14 +108,22 @@ public class SortedLinkedList {
             current.next = current.next.next;
             current = current.next;
         }
+
+        if (head == null) {
+            System.out.println("Original list: ");
+            System.out.println("The list is empty");
+            System.out.println("Modified list: ");
+        }
     }
 
     public void intersection(SortedLinkedList list2) {
         SortedLinkedList intersectionList = new SortedLinkedList();
-
+    
         NodeType current1 = this.head;
         NodeType current2 = list2.head;
-
+    
+        System.out.print("Intersection of lists: ");
+    
         while (current1 != null && current2 != null) {
             int compareResult = current1.info.compareTo(current2.info);
             if (compareResult < 0) {
@@ -127,13 +131,38 @@ public class SortedLinkedList {
             } else if (compareResult > 0) {
                 current2 = current2.next;
             } else {
-                // Common element, add to intersectionList
                 intersectionList.insertItem(current1.info);
                 current1 = current1.next;
                 current2 = current2.next;
             }
         }
+    
+        System.out.println(intersectionList);
+    }
 
-        System.out.print("Intersection: " + intersectionList);
+    public boolean containsItem(ItemType item3) {
+        NodeType current = head;
+        while (current != null) {
+            if (item3.compareTo(current.info) == 0) {
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+
+    //@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        NodeType current = head;
+        while (current != null) {
+            sb.append(current.info.toString()).append(" ");
+            current = current.next;
+        }
+        return sb.toString();
+    }
+
+    public boolean isEmpty() {
+        return head == null;
     }
 }
